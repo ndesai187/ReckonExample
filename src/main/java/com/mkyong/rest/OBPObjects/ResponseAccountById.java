@@ -1,0 +1,61 @@
+package com.mkyong.rest.OBPObjects;
+
+/**
+ * Created by bennettzhou on 20/04/2017.
+ */
+public class ResponseAccountById {
+    private String bank_fullname;
+    private String id;
+    private String number;
+    private String amount;
+    private String currency;
+    private String displayname;
+
+    public String getBank_fullname() {
+        return bank_fullname;
+    }
+
+    public void setBank_fullname(String bank_fullname) {
+        this.bank_fullname = bank_fullname;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getNumber() {
+        return number;
+    }
+
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    public String getAmount() {
+        return amount;
+    }
+
+    public void setAmount(String amount) {
+        this.amount = amount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
+    public String getDisplayname() {
+        return displayname;
+    }
+
+    public void setDisplayname(String displayname) {
+        this.displayname = displayname;
+    }
+}
