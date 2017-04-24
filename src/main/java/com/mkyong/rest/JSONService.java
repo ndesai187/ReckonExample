@@ -20,9 +20,10 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,12 +37,11 @@ import java.util.concurrent.ExecutionException;
 public class JSONService {
 
 	final static String BaseUrl = "https://apisandbox.openbankproject.com/obp/v2.0.0";
+	final static String DefaultUser="bennettzhou1";
+	private static TestUser testuser = new TestUser();
 	private static Map<String, String> BANKS = new HashMap<String, String>();
-	private static OAuth10aService service = new ServiceBuilder()
-			.apiKey("bf3hvn0fxgy1ikrjplhzyljjrwpyy2egomaztsga")
-			.apiSecret("fbeiz303g1xdujaghu2qou5ebstmgy4c1tlaetut")
-			.callback("oob")
-			.build(OBPApi.instance());
+	private static Map<String, OAuth10aService> serviceMap = new HashMap<String, OAuth10aService>();
+	private static Map<String, OAuthRequest> requestMap = new HashMap<String, OAuthRequest>();
 
 	public JSONService() {
 		getBanks();
@@ -63,8 +63,8 @@ public class JSONService {
 	@GET
 	@Path("/getAccountById")
 	@Produces("application/json")
-	public ResponseAccountById getAccountById(@QueryParam("bank") String bank, @QueryParam("account") String account) {
-		String message = getResponse(BaseUrl+"/my/banks/"+bank+"/accounts/"+account+"/account");
+	public ResponseAccountById getAccountById(@QueryParam("user_name") String user_name, @QueryParam("bank") String bank, @QueryParam("account") String account) {
+		String message = getResponse(user_name,BaseUrl+"/my/banks/"+bank+"/accounts/"+account+"/account");
 		Gson gson = new Gson();
 		AccountById obj = gson.fromJson(message, AccountById.class);
 		ResponseAccountById reply = new ResponseAccountById();
@@ -83,7 +83,7 @@ public class JSONService {
 	@Path("/getBanks")
 	@Produces("application/json")
 	public ResponseBanks getBanks() {
-		String message = getResponse(BaseUrl+"/banks");
+		String message = getResponse(null,BaseUrl+"/banks");
 		Gson gson = new Gson();
 		AllBanks obj = gson.fromJson(message, AllBanks.class);
 		ResponseBanks reply = new ResponseBanks();
@@ -102,7 +102,7 @@ public class JSONService {
 	//http://localhost:8080/ReckonINGExample/getMyAccounts?user_name=bennettzhou1
 	public ResponseMyAccounts getMyAccounts(@QueryParam("user_name")String user_name) {
 
-		String message = getResponse(BaseUrl+"/my/accounts");
+		String message = getResponse(user_name,BaseUrl+"/my/accounts");
 		Gson gson = new Gson();
 		Type type = new TypeToken<List<MyAccounts>>() {}.getType();
 		List<MyAccounts> myAccountsList = gson.fromJson(message, type);
@@ -113,7 +113,7 @@ public class JSONService {
 		for(MyAccounts myAccount: myAccountsList){
 			count++;
 			try {
-				ResponseAccountById accountById = getAccountById(myAccount.getBank_id(), myAccount.getId());
+				ResponseAccountById accountById = getAccountById(user_name, myAccount.getBank_id(), myAccount.getId());
 				if (user_name.equals(accountById.getDisplayname())) {
 					accounts.add(accountById);
 				}
@@ -288,13 +288,18 @@ public class JSONService {
 		return null;
 	}
 
-	public static String getResponse(String url) {
-
-		 String message="";
+	public String getResponse(String user, String url) {
+		String message="";
+		if(user==null)
+			user=DefaultUser;
 
 		try {
-			OAuthRequest request = getOBPRequest(url);
-			com.github.scribejava.core.model.Response response = service.execute(request);
+			if (requestMap.get(user + url) == null) {
+				initiateRequest(user, url);
+			}
+
+			com.github.scribejava.core.model.Response response=serviceMap.get(user).execute(requestMap.get(user+url));
+
 			System.out.println("Got it! Lets see what we found...");
 			System.out.println(response.getCode());
 			System.out.println(response.getBody());
@@ -303,34 +308,34 @@ public class JSONService {
 			e.printStackTrace();
 		} catch (InterruptedException e) {
 			e.printStackTrace();
-		} catch (ExecutionException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return message;
 	}
 
-	private static OAuthRequest getOBPRequest(String url){
-		String oauth_token="E52YBZRPHLRV1UY2JKPKT4YTRG1ZMOZ0IV5KQSGL";
-		String oauth_token_secret="TSH4M4NMCVHXKPMQHEAA33PM1YBPW3GEJVFUKOFX";
-		String rawResponse="oauth_token="+oauth_token+"&oauth_token_secret="+oauth_token_secret;
+	private static void initiateRequest(String user, String url) throws IllegalAccessException, InstantiationException {
 
-		if(service==null){
-			service = new ServiceBuilder()
-					.apiKey("bf3hvn0fxgy1ikrjplhzyljjrwpyy2egomaztsga")
-					.apiSecret("fbeiz303g1xdujaghu2qou5ebstmgy4c1tlaetut")
+		ArrayList<String> keylist = testuser.getKeys().get(user);
+		if(serviceMap.get(user)==null) {
+			serviceMap.put(user, new ServiceBuilder()
+					.apiKey(keylist.get(0))
+					.apiSecret(keylist.get(1))
 					.callback("oob")
-					.build(OBPApi.instance());
+					.build(OBPApi.instance()));
 		}
-		OAuth1AccessToken accessToken = new OAuth1AccessToken(oauth_token, oauth_token_secret, rawResponse);
+
+		OAuth1AccessToken accessToken = new OAuth1AccessToken(keylist.get(2), keylist.get(3), keylist.get(4));
 		OAuthRequest request = new OAuthRequest(Verb.GET, url);
-		service.signRequest(accessToken, request);
-		return request;
+		serviceMap.get(user).signRequest(accessToken, request);
+		requestMap.put(user+url, request);
 	}
 
 
 	public static void main(String[] args) {
 
 		//getMyAccounts("bennettzhou1");
+
 		/*
 		String message = getResponse(BaseUrl+"/my/banks/rbs/accounts/BenAccount_1/account");
 		Gson gson = new Gson();
@@ -393,6 +398,7 @@ public class JSONService {
 		if (StringUtils.isBlank(verifierValue)) {
 
 	*/
+
 
 
 }
