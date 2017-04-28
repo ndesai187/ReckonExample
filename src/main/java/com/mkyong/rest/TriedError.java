@@ -26,9 +26,9 @@ public class TriedError {
     public static void main(String[] args) {
 
         final OAuth10aService service = new ServiceBuilder()
-                .apiKey("mfdgjxjwxqc0ukbksov4z2yl51slm544541bfack")
-                .apiSecret("c1knrjkyq0q4ekonalekcctinqgd0sfhxonob1og")
-                .callback("http://e353fe9a.ngrok.io/ReckonINGExample/json/product/callback")
+                .apiKey("f1y3h5r2sqn02jz2mu2gljfcl5nqh3nxz0jcclte")
+                .apiSecret("khtirqdmxqu5dmtmkk1fvuoayn11c21vqokmhcyc")
+                .callback("oob")
                 .build(OBPApi.instance());
 
         final OAuth1RequestToken requestToken;

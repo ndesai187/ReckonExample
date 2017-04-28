@@ -21,7 +21,18 @@ public class JTest {
 
     public void TestDepositAccounts() {
 
-        //JSONService j = new JSONService();
+        JSONService j = new JSONService();
+        j.getBanks();
+        j.getBanks();
+        j.getBanks();
+        //System.out.println("ING Account Balance>>>>>>>>>>>>: "+j.getAccountById("superhero", "at02-1465--01", "supering").getAmount());
+        //System.out.println("HSBC Account Balance>>>>>>>>>>>>: "+j.getAccountById("superhero", "hsbc-test", "superhsbc").getAmount());
+        //System.out.println("\n=>>>>>>>>>>Transmitting EUR100 from ING to HSBC<<<<<<<<<=");
+        //j.createTransaction("superhero", "at02-1465--01", "supering", "10", "hsbc-test", "superhsbc");
+
+        //System.out.println("ING Account Balance>>>>>>>>>>>>: "+j.getAccountById("superhero", "at02-1465--01", "supering").getAmount());
+        //System.out.println("HSBC Account Balance>>>>>>>>>>>>: "+j.getAccountById("superhero", "hsbc-test", "superhsbc").getAmount());
+
         //j.getCurrentUser();
 
     }

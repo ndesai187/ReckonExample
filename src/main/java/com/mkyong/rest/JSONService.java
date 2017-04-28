@@ -7,6 +7,8 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth10aService;
 import com.google.gson.Gson;
 import com.mkyong.rest.MyAccounts.*;
+import com.mkyong.rest.MyTransactions.MyTransactions;
+import com.mkyong.rest.MyTransactions.ResponseMyTransactions;
 import com.mkyong.rest.OBPObjects.AccountById;
 import com.mkyong.rest.OBPObjects.ResponseAccountById;
 import com.mkyong.rest.Objects.DepositAccounts.CASAAccountList;
@@ -16,35 +18,40 @@ import com.mkyong.rest.Objects.DepositAccounts.SubCategoryList;
 import com.mkyong.rest.Objects.ForexRate;
 import com.mkyong.rest.Objects.Forexrates;
 import com.mkyong.rest.Objects.GetRate;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+
+import java.util.*;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.*;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 @Path("/")
 public class JSONService {
 
+	private final Logger log = LoggerFactory.getLogger(this.getClass());
+
 	final static String BaseUrl = "https://apisandbox.openbankproject.com/obp/v2.0.0";
 	final static String DefaultUser="bennettzhou1";
-	private static TestUser testuser = new TestUser();
-	private static Map<String, String> BANKS = new HashMap<String, String>();
-	private static Map<String, OAuth10aService> serviceMap = new HashMap<String, OAuth10aService>();
-	private static Map<String, OAuthRequest> requestMap = new HashMap<String, OAuthRequest>();
+	private static INGConstant INGCONSTANT = INGConstant.getInstance();
 
 	public JSONService() {
-		getBanks();
+		log.info("Initiating JSONService...");
+		if(INGCONSTANT.getBANKS() == null){
+			getBanks();
+		}
 	}
 
 	@GET
@@ -63,14 +70,15 @@ public class JSONService {
 	@GET
 	@Path("/getAccountById")
 	@Produces("application/json")
-	public ResponseAccountById getAccountById(@QueryParam("user_name") String user_name, @QueryParam("bank") String bank, @QueryParam("account") String account) {
-		String message = getResponse(user_name,BaseUrl+"/my/banks/"+bank+"/accounts/"+account+"/account");
+	public ResponseAccountById getAccountById(@QueryParam("user_name") String user_name, @QueryParam("bank_id") String bank_id, @QueryParam("account") String account) {
+		String message = getResponse(user_name,BaseUrl+"/my/banks/"+bank_id+"/accounts/"+account+"/account");
 		Gson gson = new Gson();
 		AccountById obj = gson.fromJson(message, AccountById.class);
 		ResponseAccountById reply = new ResponseAccountById();
 
 		reply.setAmount(obj.getBalance().getAmount());
-		reply.setBank_fullname(BANKS.get(obj.getBank_id()));
+		reply.setBank_fullname(INGCONSTANT.getBANKS().get(obj.getBank_id()));
+		reply.setBank_id(obj.getBank_id());
 		reply.setCurrency(obj.getBalance().getCurrency());
 		reply.setDisplayname(obj.getOwners()[0].getDisplay_name());
 		reply.setId(obj.getId());
@@ -83,14 +91,24 @@ public class JSONService {
 	@Path("/getBanks")
 	@Produces("application/json")
 	public ResponseBanks getBanks() {
-		String message = getResponse(null,BaseUrl+"/banks");
-		Gson gson = new Gson();
-		AllBanks obj = gson.fromJson(message, AllBanks.class);
 		ResponseBanks reply = new ResponseBanks();
-		ArrayList<String> bankList= new ArrayList<String>();
-		for(Banks banks: obj.getBanks()){
-			bankList.add(banks.getId()+"<===>"+banks.getFull_name());
-			BANKS.put(banks.getId(), banks.getFull_name());
+		ArrayList<String> bankList = new ArrayList<String>();
+		if(INGCONSTANT.getBANKS()== null) {
+			log.info("Creating Banking map...");
+			HashMap<String, String> map = new HashMap<String, String>();
+			String message = getResponse(null, BaseUrl + "/banks");
+			Gson gson = new Gson();
+			AllBanks obj = gson.fromJson(message, AllBanks.class);
+
+			for (Banks banks : obj.getBanks()) {
+				bankList.add(banks.getId() + ":" + banks.getFull_name());
+				map.put(banks.getId(), banks.getFull_name());
+			}
+			INGCONSTANT.setBANKS(map);
+		}else{
+			for(String key : INGCONSTANT.getBANKS().keySet()){
+				bankList.add(key + ":" + INGCONSTANT.getBANKS().get(key));
+			}
 		}
 		reply.setBanks(bankList);
 		return reply;
@@ -191,6 +209,39 @@ public class JSONService {
 	       return null;
 	}
 
+
+	@GET
+	@Path("/createTransaction/{user_name}")
+	@Produces("application/json")
+	public ResponseMyTransactions createTransaction(@PathParam("user_name") String user_name, @QueryParam("frombank_id")
+			String frombank_id, @QueryParam("fromid") String fromid, @QueryParam("amount")
+			String amount, @QueryParam("tobank_id") String tobank_id, @QueryParam("toid") String toid) {
+
+		String urlTransaction = "https://apisandbox.openbankproject.com/obp/v2.0.0/banks/%s/accounts/%s/owner/transaction-request-types/SANDBOX_TAN/transaction-requests";
+		String url = String.format(urlTransaction, frombank_id, fromid);
+		String sendingEntity = "{\"to\":{\"bank_id\":\""+tobank_id+"\", \"account_id\":\""+toid+"\"}, \"value\":{\"currency\":\"EUR\", \"amount\":\"" + amount+"\"},  \"description\":\"Alexa voice transaction!\"}";
+
+		String stringMessage = postResponse(user_name, url, sendingEntity);
+		Gson gson = new Gson();
+		MyTransactions obj = gson.fromJson(stringMessage, MyTransactions.class);
+		ResponseMyTransactions reply = new ResponseMyTransactions();
+		reply.setTransaction_ids(obj.getTransaction_ids());
+		reply.setAccount_id(obj.getFrom().getAccount_id());
+		reply.setBank_id(obj.getFrom().getBank_id());
+		reply.setBank_fullname(INGCONSTANT.getBANKS().get(obj.getFrom().getBank_id()));
+		reply.setStart_date(obj.getStart_date());
+		reply.setEnd_date(obj.getEnd_date());
+		reply.setStatus(obj.getStatus());
+		//check balance
+		ResponseAccountById AccountSummary = getAccountById(user_name, frombank_id, fromid);
+		reply.setBalance(AccountSummary.getAmount());
+		reply.setCurrency(AccountSummary.getCurrency());
+
+		return reply;
+
+	}
+
+
 	@POST
 	@Path("/post")
 	@Consumes("application/json")
@@ -288,21 +339,54 @@ public class JSONService {
 		return null;
 	}
 
+	public String postResponse(String user, String url, String sendingEntity) {
+
+
+		try {
+			OAuthRequest request = initiateTransaction(user, url, sendingEntity);
+			com.github.scribejava.core.model.Response response = INGCONSTANT.getServiceMap().get(user).execute(request);
+			final String jsonString = response.getBody();
+			final int statusCode = response.getCode();
+
+			if ((statusCode == 200) || (statusCode == 201)) {
+
+				log.info("\nTransaction response from OBP... ");
+				log.info("status code: "+response.getCode());
+				log.info("json body: "+response.getBody());
+				return jsonString;
+			} else {
+				String statusDesc = response.getMessage();
+				log.error("Error: " + statusCode + " : " + statusDesc);
+				return "Response Null: " + statusCode + " : " + statusDesc;
+			}
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		} catch (InterruptedException e) {
+			log.error(e.getMessage());
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return "ERROR!!!";
+	}
+
 	public String getResponse(String user, String url) {
 		String message="";
 		if(user==null)
 			user=DefaultUser;
 
 		try {
-			if (requestMap.get(user + url) == null) {
-				initiateRequest(user, url);
+			if (INGCONSTANT.getRequestMap().get(user + url) == null) {
+				log.info("Initiating Request for user+url="+user+url);
+				OAuthRequest request = initiateRequest(user, url);
+				HashMap<String, OAuthRequest> map = INGCONSTANT.getRequestMap();
+				map.put(user + url, request);
+				INGCONSTANT.setRequestMap(map);
 			}
-
-			com.github.scribejava.core.model.Response response=serviceMap.get(user).execute(requestMap.get(user+url));
-
-			System.out.println("Got it! Lets see what we found...");
-			System.out.println(response.getCode());
-			System.out.println(response.getBody());
+			OAuthRequest request = INGCONSTANT.getRequestMap().get(user+url);
+			com.github.scribejava.core.model.Response response=INGCONSTANT.getServiceMap().get(user).execute(request);
+			log.info("\nGet response from OBP...");
+			log.info("status code: "+response.getCode());
+			log.info("json body: "+response.getBody());
 			message = response.getBody();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -314,21 +398,38 @@ public class JSONService {
 		return message;
 	}
 
-	private static void initiateRequest(String user, String url) throws IllegalAccessException, InstantiationException {
+	private OAuthRequest initiateRequest(String user, String url) throws IllegalAccessException, InstantiationException {
+		OAuth1AccessToken token = getAccessToken(user);
+		OAuthRequest request = new OAuthRequest(Verb.GET, url);
+		INGCONSTANT.getServiceMap().get(user).signRequest(token, request);
+		return(request);
+	}
 
-		ArrayList<String> keylist = testuser.getKeys().get(user);
-		if(serviceMap.get(user)==null) {
-			serviceMap.put(user, new ServiceBuilder()
+	private OAuthRequest initiateTransaction(String user, String url, String sendingEntity) throws IllegalAccessException, InstantiationException, InterruptedException, ExecutionException, IOException {
+		OAuth1AccessToken token = getAccessToken(user);
+		OAuthRequest request = new OAuthRequest(Verb.POST, url);
+		request.addHeader("Content-Type", "application/json");
+		request.setPayload(sendingEntity);
+
+		System.out.println("\nPosting urlString: " + url);
+		System.out.println("SendingEntity: '" + sendingEntity + "'");
+		INGCONSTANT.getServiceMap().get(user).signRequest(token, request);
+		return request;
+	}
+
+	private OAuth1AccessToken getAccessToken(String user){
+		ArrayList<String> keylist = INGCONSTANT.getTestuser().getKeys().get(user);
+		if(INGCONSTANT.getServiceMap().get(user) == null) {
+			log.info("Initiating Service for user="+user);
+			HashMap<String, OAuth10aService> map = INGCONSTANT.getServiceMap();
+			map.put(user, new ServiceBuilder()
 					.apiKey(keylist.get(0))
 					.apiSecret(keylist.get(1))
 					.callback("oob")
 					.build(OBPApi.instance()));
+			INGCONSTANT.setServiceMap(map);
 		}
-
-		OAuth1AccessToken accessToken = new OAuth1AccessToken(keylist.get(2), keylist.get(3), keylist.get(4));
-		OAuthRequest request = new OAuthRequest(Verb.GET, url);
-		serviceMap.get(user).signRequest(accessToken, request);
-		requestMap.put(user+url, request);
+		return(new OAuth1AccessToken(keylist.get(2), keylist.get(3), keylist.get(4)));
 	}
 
 
@@ -343,62 +444,6 @@ public class JSONService {
 		System.out.println(obj.toString());
 		*/
 	}
-
-/*
-	public void onResume() {
-		Uri uri = this.getIntent().getData();
-
-		if (uri != null && uri.toString().startsWith(CALLBACK_URL)) {
-			Log.d("OAuthTwitter", uri.toString());
-			String verifier = uri.getQueryParameter(OAuth.OAUTH_VERIFIER);
-			Log.d("OAuthTwitter", verifier);
-			try {
-
-				provider.retrieveAccessToken(consumer, verifier);
-				ACCESS_KEY = consumer.getToken();
-				ACCESS_SECRET = consumer.getTokenSecret();
-
-				Log.d("OAuthTwitter", ACCESS_KEY);
-				Log.d("OAuthTwitter", ACCESS_SECRET);
-
-			} catch (OAuthMessageSignerException e) {
-				e.printStackTrace();
-			} catch (OAuthNotAuthorizedException e) {
-				e.printStackTrace();
-			} catch (OAuthExpectationFailedException e) {
-				e.printStackTrace();
-			} catch (OAuthCommunicationException e) {
-				e.printStackTrace();
-			}
-		}
-
-
-	public String auth() throws MalformedURLException, InterruptedException {
-		try {
-			PlatformUI.getWorkbench().getBrowserSupport().getExternalBrowser().openURL(new URL(authUrl));
-		} catch (PartInitException couldNotOpenBrowser) {
-			LinkedHashMap<String, String> btns = MapUtil.orderedMap();
-			btns.put(Constants.Plugin_OAuth_Copy, Messages.Plugin_OAuth_Copy);
-			btns.put(Constants.Plugin_OAuth_Cancel, Messages.Plugin_OAuth_Cancel);
-
-			String opt = new SyncEclipseUtil().openCustomImageTypeWithCustomButtonsSyncly(shell, Messages.Plugin_OAuth_Title, Messages.Plugin_OAuth_DoItManually, new Image(Display.getDefault(), getClass().getClassLoader().getResourceAsStream(Constants.OAUTH_EVERNOTE_TRADEMARK)), btns);
-			if (Constants.Plugin_OAuth_Copy.equals(opt)) {
-				ClipboardUtil.copy(authUrl);
-			} else {
-				return StringUtils.EMPTY;
-			}
-		}
-
-		// wait for callback handling
-		synchronized (callback) {
-			callback.wait(30 * 60 * 1000);// 30 minutes
-		}
-
-		String verifierValue = callback.getVerifier();
-		if (StringUtils.isBlank(verifierValue)) {
-
-	*/
-
 
 
 }

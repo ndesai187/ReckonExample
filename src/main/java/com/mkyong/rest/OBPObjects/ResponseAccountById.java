@@ -4,12 +4,21 @@ package com.mkyong.rest.OBPObjects;
  * Created by bennettzhou on 20/04/2017.
  */
 public class ResponseAccountById {
+    private String bank_id;
     private String bank_fullname;
     private String id;
     private String number;
     private String amount;
     private String currency;
     private String displayname;
+
+    public String getBank_id() {
+        return bank_id;
+    }
+
+    public void setBank_id(String bank_id) {
+        this.bank_id = bank_id;
+    }
 
     public String getBank_fullname() {
         return bank_fullname;

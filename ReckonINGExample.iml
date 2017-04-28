@@ -27,6 +27,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../apacheds-all-1.5.4.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.8.2" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.resteasy:resteasy-jaxrs:2.2.1.GA" level="project" />
     <orderEntry type="library" name="Maven: org.jboss.resteasy:jaxrs-api:2.2.1.GA" level="project" />
@@ -48,5 +57,7 @@
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.4" level="project" />
     <orderEntry type="library" name="Maven: com.github.scribejava:scribejava-apis:4.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.github.scribejava:scribejava-core:4.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.25" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-nop:1.7.25" level="project" />
   </component>
 </module>
