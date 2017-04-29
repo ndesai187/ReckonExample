@@ -1,4 +1,6 @@
 # ReckonExample
+
+<b>Useful Info</b>
 Development tools: IntelliJ Ultimate
 
 Server: Wildfly
@@ -11,12 +13,14 @@ json to java object: http://pojo.sodhanalibrary.com
 
 JUnit test: Refer to jTest.java
 
-GetBank list:
+
+<b>API Detail</b>
+
+0.GetBank list:
 https://reckoning.pagekite.me/ReckonINGExample/getBanks
 
-output:
+0.output:
 {"banks":["rbs:RBS Bank","hsbc-test:HSBC BANK"]}
-
 
 
 1.Get all accounts for user bennettzhou1
@@ -91,6 +95,15 @@ https://reckoning.pagekite.me/ReckonINGExample/createTransaction/superhero?fromb
 7.output
 
 {"transaction_ids":"5220bbbc-420e-4546-abab-b144502c4480","bank_id":"hsbc-test","bank_fullname":"Hongkong and Shanghai Bank","account_id":"superhsbc","status":"COMPLETED","start_date":"2017-04-28T16:45:33Z","end_date":"2017-04-28T16:45:33Z","balance":"1890.00","currency":"EUR"}
+
+
+8.Check Transaction history for account superhsbc in HSBC bank, under user_name superhero
+https://reckoning.pagekite.me/ReckonINGExample/getTransactionHistoryById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
+
+
+
+9.Check ALL Transaction history of all bank accounts of user superhero
+https://reckoning.pagekite.me/ReckonINGExample/getMyTransactionHistory?user_name=superhero
 
 
 
