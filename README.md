@@ -1,17 +1,18 @@
 # ReckonExample
 
 <b>Useful Info</b>
-Development tools: IntelliJ Ultimate
 
-Server: Wildfly
+<li>Development tools: IntelliJ Ultimate</li>
 
-localhost to internet: pagekite.me
+<li>Server: Wildfly</li>
 
-api reference: https://apiexplorersandbox.openbankproject.com
+<li>localhost to internet: pagekite.me</li>
 
-json to java object: http://pojo.sodhanalibrary.com
+<li>api reference: https://apiexplorersandbox.openbankproject.com</li>
 
-JUnit test: Refer to jTest.java
+<li>json to java object: http://pojo.sodhanalibrary.com</li>
+
+<li>JUnit test: Refer to jTest.java</li>
 
 
 <b>API Detail</b>
