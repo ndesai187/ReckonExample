@@ -84,7 +84,6 @@
 			<plugin>
 				<groupId>org.wildfly.plugins</groupId>
 				<artifactId>wildfly-maven-plugin</artifactId>
-				<version>${version.wildfly.maven.plugin}</version>
 			</plugin>
 
 			<plugin>
@@ -103,7 +102,7 @@
 								<artifactItem>
 									<groupId>org.wildfly</groupId>
 									<artifactId>wildfly-dist</artifactId>
-									<version>${version.wildfly}</version>
+									<version>10.1.0.Final</version>
 									<type>zip</type>
 									<overWrite>false</overWrite>
 									<outputDirectory>target</outputDirectory>
@@ -120,8 +119,7 @@
 				<version>3.0.0</version>
 				<configuration>
 					<failOnMissingWebXml>false</failOnMissingWebXml>
-					<outputDirectory>target/wildfly-${version.wildfly}/standalone/deployments</outputDirectory>
-					<warName>${project.artifactId}</warName>
+					<outputDirectory>target/wildfly-10.1.0.Final/standalone/deployments</outputDirectory>
 				</configuration>
 			</plugin>
 		</plugins>
