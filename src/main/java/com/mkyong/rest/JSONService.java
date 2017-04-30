@@ -139,7 +139,7 @@ public class JSONService {
 			@Override
 			public int compare(String o1, String o2) {
 				try {
-					return f.parse(o1.substring(o1.indexOf(":")+1)).compareTo(f.parse(o2.substring(o2.indexOf(":")+1)));
+					return f.parse(o2.substring(o2.indexOf(":")+1)).compareTo(f.parse(o1.substring(o1.indexOf(":")+1)));
 				} catch (ParseException e) {
 					throw new IllegalArgumentException(e);
 				}
@@ -435,8 +435,7 @@ public class JSONService {
 	}
 
 	public String postResponse(String user, String url, String sendingEntity) {
-
-
+		
 		try {
 			OAuthRequest request = initiateTransaction(user, url, sendingEntity);
 			com.github.scribejava.core.model.Response response = INGCONSTANT.getService().execute(request);
