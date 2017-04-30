@@ -15,8 +15,9 @@
 <li>JUnit test: Refer to jTest.java</li>
 
 <br/>
+<br/>
 
-<b>API Detail</b>
+<b>Pagekite API (Local Webserver) - Passive</b>
 
 <br/>
 
@@ -112,9 +113,10 @@ https://reckoning.pagekite.me/ReckonINGExample/getMyTransactionHistory?user_name
 </p>
 
 
+<br/>
+<br/>
 
-
-<b>HeroKu API</b>
+<b>HeroKu API (cloud) - Active</b>
 
 <li>GetBank list:</li>
 https://reckoning1.herokuapp.com/ReckonINGExample/getBanks
@@ -143,7 +145,7 @@ https://reckoning1.herokuapp.com/ReckonINGExample/createTransaction/superhero?fr
 https://reckoning1.herokuapp.com/ReckonINGExample/getTransactionHistoryById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
 
 
-<li>Check ALL Transaction history of user superhero</li>
+<li>Check ALL Transaction history of user superhero (sorted by completion datetime in descendent)</li>
 https://reckoning1.herokuapp.com/ReckonINGExample/getMyTransactionHistory?user_name=superhero
 
 
