@@ -123,7 +123,7 @@ https://reckoning1.herokuapp.com/ReckonINGExample/getBanks
 https://reckoning1.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=bennettzhou1
 
 <li>Get all accounts for user superhero</li>
-https://reckoning.pagekite.me/ReckonINGExample/getMyAccounts?user_name=superhero
+https://reckoning1.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=superhero
 
 <li>Get balance for user bennettzhou1, bank_id = rbs(RBS Bank), Account name=BenAccount_1</li>
 https://reckoning1.herokuapp.com/ReckonINGExample/getAccountById?user_name=bennettzhou1&bank_id=rbs&account=BenAccount_1
