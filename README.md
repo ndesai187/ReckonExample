@@ -119,34 +119,34 @@ https://reckoning.pagekite.me/ReckonINGExample/getMyTransactionHistory?user_name
 <b>HeroKu API (cloud) - Active</b>
 
 <li>GetBank list:</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getBanks
+https://myreckoning.herokuapp.com/ReckonINGExample/getBanks
 
 <li>Get all accounts for user bennettzhou1</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=bennettzhou1
+https://myreckoning.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=bennettzhou1
 
 <li>Get all accounts for user superhero</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=superhero
+https://myreckoning.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=superhero
 
 <li>Get balance for user bennettzhou1, bank_id = rbs(RBS Bank), Account name=BenAccount_1</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getAccountById?user_name=bennettzhou1&bank_id=rbs&account=BenAccount_1
+https://myreckoning.herokuapp.com/ReckonINGExample/getAccountById?user_name=bennettzhou1&bank_id=rbs&account=BenAccount_1
 
 <li>Get balance for user superhero, bank_id = hsbc-test(HSBC Bank), Account name=superhsbc</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getAccountById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
+https://myreckoning.herokuapp.com/ReckonINGExample/getAccountById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
 
 <li>Get balance for user superhero, bank_id = at02-1465–01(ING Bank), Account name=supering</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getAccountById?user_name=superhero&bank_id=at02-1465--01&account=supering
+https://myreckoning.herokuapp.com/ReckonINGExample/getAccountById?user_name=superhero&bank_id=at02-1465--01&account=supering
 
 
 <li>Transfer 10 dollar from ING bank account to HSBC account under user_name superhero</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/createTransaction/superhero?frombank_id=at02-1465--01&fromid=supering&amount=10&tobank_id=hsbc-test&toid=superhsbc
+https://myreckoning.herokuapp.com/ReckonINGExample/createTransaction/superhero?frombank_id=at02-1465--01&fromid=supering&amount=10&tobank_id=hsbc-test&toid=superhsbc
 
 
 <li>Check Transaction history for account superhsbc in HSBC bank, under user superhero</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getTransactionHistoryById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
+https://myreckoning.herokuapp.com/ReckonINGExample/getTransactionHistoryById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
 
 
 <li>Check ALL Transaction history of user superhero (sorted by completion datetime in descendent)</li>
-https://reckoning1.herokuapp.com/ReckonINGExample/getMyTransactionHistory?user_name=superhero
+https://myreckoning.herokuapp.com/ReckonINGExample/getMyTransactionHistory?user_name=superhero
 
 
 
