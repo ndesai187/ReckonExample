@@ -106,7 +106,7 @@ https://reckoning.pagekite.me/ReckonINGExample/getTransactionHistoryById?user_na
 <br/>
 
 
-9. Check ALL Transaction histories of all bank accounts of user superhero (sorted by completion datetime in ascendent)
+9. Check ALL Transaction histories of all bank accounts of user superhero (sorted by completion datetime in descendent)
 https://reckoning.pagekite.me/ReckonINGExample/getMyTransactionHistory?user_name=superhero
 <br/>
 </p>
