@@ -18,6 +18,10 @@ import com.mkyong.rest.Objects.DepositAccounts.SubCategoryList;
 import com.mkyong.rest.Objects.ForexRate;
 import com.mkyong.rest.Objects.Forexrates;
 import com.mkyong.rest.Objects.GetRate;
+import com.mkyong.rest.TransactionHistById.ResponseTransactionhistById;
+import com.mkyong.rest.TransactionHistById.TransactionHistBean;
+import com.mkyong.rest.TransactionHistById.TransactionHistById;
+import com.mkyong.rest.TransactionHistById.Transactions;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -32,6 +36,10 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
+import java.text.ParseException;
+import java.util.Date;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import javax.ws.rs.*;
@@ -42,9 +50,7 @@ import java.util.concurrent.ExecutionException;
 public class JSONService {
 
 	private final Logger log = LoggerFactory.getLogger(this.getClass());
-
 	final static String BaseUrl = "https://apisandbox.openbankproject.com/obp/v2.0.0";
-	final static String DefaultUser="bennettzhou1";
 	private static INGConstant INGCONSTANT = INGConstant.getInstance();
 
 	public JSONService() {
@@ -66,6 +72,92 @@ public class JSONService {
 		return product; 
 
 	}
+
+	@GET
+	@Path("/getTransactionHistoryById")
+	@Produces("application/json")
+	public ResponseTransactionhistById getTransactionHistoryById(@QueryParam("user_name") String user_name, @QueryParam("bank_id") String bank_id, @QueryParam("account") String account) {
+		String message = getResponse(user_name,BaseUrl+"/my/banks/"+bank_id+"/accounts/"+account+"/transactions");
+		Gson gson = new Gson();
+		TransactionHistById obj = gson.fromJson(message, TransactionHistById.class);
+		ResponseTransactionhistById reply = new ResponseTransactionhistById();
+		ArrayList<TransactionHistBean> transactionList = new ArrayList<TransactionHistBean>();
+
+		for(Transactions tranx : obj.getTransactions()){
+			TransactionHistBean bean = new TransactionHistBean();
+			bean.setTransactionId(tranx.getId());
+			bean.setMyAccount(tranx.getAccount().getId());
+			bean.setMyBank(tranx.getAccount().getBank().getName());
+			bean.setMyAccountNumber(tranx.getAccount().getNumber());
+			bean.setToAccount(tranx.getCounterparty().getHolder().getName() + (INGCONSTANT.getAccountMap()
+					.get(tranx.getCounterparty().getNumber())==null?"":"(id="+INGCONSTANT.getAccountMap().get(tranx.getCounterparty().getNumber())+")"));
+			bean.setToBank(tranx.getCounterparty().getBank().getName());
+			bean.setToAccountNumber(tranx.getCounterparty().getNumber());
+			bean.setAmount(tranx.getDetails().getValue().getAmount());
+			bean.setCurrency(tranx.getDetails().getValue().getCurrency());
+
+			bean.setCompletedDateTime(tranx.getDetails().getCompleted());
+			bean.setType(tranx.getDetails().getType());
+			bean.setDescription(tranx.getDetails().getDescription());
+			bean.setNewBalance(tranx.getDetails().getNew_balance().getAmount());
+			bean.setBalanceCcy(tranx.getDetails().getNew_balance().getCurrency());
+			transactionList.add(bean);
+		}
+		reply.setNumOfTranx(String.valueOf(transactionList.size()));
+		reply.setDisplayname(user_name);
+		reply.setTransactionList(transactionList);
+		return reply;
+	}
+
+	@GET
+	@Path("/getMyTransactionHistory")
+	@Produces("application/json")
+	public ResponseTransactionhistById getMyTransactionHistory(@QueryParam("user_name")String user_name) {
+
+		String message = getResponse(user_name,BaseUrl+"/my/accounts");
+		Gson gson = new Gson();
+		Type type = new TypeToken<List<MyAccounts>>() {}.getType();
+		List<MyAccounts> myAccountsList = gson.fromJson(message, type);
+
+		ResponseTransactionhistById reply = new ResponseTransactionhistById();
+		Map<String, TransactionHistBean> AllMyHistory = new HashMap<String, TransactionHistBean>();
+		for(MyAccounts myAccount: myAccountsList){
+			try {
+				ResponseTransactionhistById transactionHist =
+						getTransactionHistoryById(user_name, myAccount.getBank_id(), myAccount.getId());
+				for(TransactionHistBean bean : transactionHist.getTransactionList()){
+					AllMyHistory.put(bean.getTransactionId() + ":" +bean.getCompletedDateTime(), bean);
+				}
+			}catch(Exception e){
+				log.error(e.toString());
+			}
+		}
+
+		List<String> datelist = new ArrayList<String>(AllMyHistory.keySet());
+		Collections.sort(datelist, new Comparator<String>() {
+			DateFormat f = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ss'Z'");
+			@Override
+			public int compare(String o1, String o2) {
+				try {
+					return f.parse(o1.substring(o1.indexOf(":")+1)).compareTo(f.parse(o2.substring(o2.indexOf(":")+1)));
+				} catch (ParseException e) {
+					throw new IllegalArgumentException(e);
+				}
+			}
+		});
+
+		ArrayList<TransactionHistBean> AllMyHistoryList = new ArrayList<TransactionHistBean>();
+		for(String a: datelist){
+			AllMyHistoryList.add(AllMyHistory.get(a));
+		}
+
+		reply.setNumOfTranx(String.valueOf(AllMyHistoryList.size()));
+		reply.setDisplayname(user_name);
+		reply.setTransactionList(AllMyHistoryList);
+		return reply;
+	}
+
+
 
 	@GET
 	@Path("/getAccountById")
@@ -126,20 +218,23 @@ public class JSONService {
 		List<MyAccounts> myAccountsList = gson.fromJson(message, type);
 
 		ResponseMyAccounts reply = new ResponseMyAccounts();
-		int count = 0;
 		ArrayList<ResponseAccountById> accounts = new ArrayList<ResponseAccountById>();
 		for(MyAccounts myAccount: myAccountsList){
-			count++;
 			try {
 				ResponseAccountById accountById = getAccountById(user_name, myAccount.getBank_id(), myAccount.getId());
+				if(INGCONSTANT.getAccountMap().get(accountById.getNumber()) == null){
+					HashMap<String, String> map = INGCONSTANT.getAccountMap();
+					map.put(accountById.getNumber(), accountById.getId());
+					INGCONSTANT.setAccountMap(map);
+				}
 				if (user_name.equals(accountById.getDisplayname())) {
 					accounts.add(accountById);
 				}
 			}catch(Exception e){
-				count--;
+				log.error(e.toString());
 			}
 		}
-		reply.setNumOfAccounts(String.valueOf(count));
+		reply.setNumOfAccounts(String.valueOf(accounts.size()));
 		reply.setDisplayname(user_name);
 		reply.setAccountList(accounts);
 
@@ -344,7 +439,7 @@ public class JSONService {
 
 		try {
 			OAuthRequest request = initiateTransaction(user, url, sendingEntity);
-			com.github.scribejava.core.model.Response response = INGCONSTANT.getServiceMap().get(user).execute(request);
+			com.github.scribejava.core.model.Response response = INGCONSTANT.getService().execute(request);
 			final String jsonString = response.getBody();
 			final int statusCode = response.getCode();
 
@@ -372,7 +467,7 @@ public class JSONService {
 	public String getResponse(String user, String url) {
 		String message="";
 		if(user==null)
-			user=DefaultUser;
+			user=INGCONSTANT.getDefaultUser();
 
 		try {
 			if (INGCONSTANT.getRequestMap().get(user + url) == null) {
@@ -383,7 +478,7 @@ public class JSONService {
 				INGCONSTANT.setRequestMap(map);
 			}
 			OAuthRequest request = INGCONSTANT.getRequestMap().get(user+url);
-			com.github.scribejava.core.model.Response response=INGCONSTANT.getServiceMap().get(user).execute(request);
+			com.github.scribejava.core.model.Response response=INGCONSTANT.getService().execute(request);
 			log.info("\nGet response from OBP...");
 			log.info("status code: "+response.getCode());
 			log.info("json body: "+response.getBody());
@@ -401,7 +496,7 @@ public class JSONService {
 	private OAuthRequest initiateRequest(String user, String url) throws IllegalAccessException, InstantiationException {
 		OAuth1AccessToken token = getAccessToken(user);
 		OAuthRequest request = new OAuthRequest(Verb.GET, url);
-		INGCONSTANT.getServiceMap().get(user).signRequest(token, request);
+		INGCONSTANT.getService().signRequest(token, request);
 		return(request);
 	}
 
@@ -413,23 +508,13 @@ public class JSONService {
 
 		System.out.println("\nPosting urlString: " + url);
 		System.out.println("SendingEntity: '" + sendingEntity + "'");
-		INGCONSTANT.getServiceMap().get(user).signRequest(token, request);
+		INGCONSTANT.getService().signRequest(token, request);
 		return request;
 	}
 
 	private OAuth1AccessToken getAccessToken(String user){
-		ArrayList<String> keylist = INGCONSTANT.getTestuser().getKeys().get(user);
-		if(INGCONSTANT.getServiceMap().get(user) == null) {
-			log.info("Initiating Service for user="+user);
-			HashMap<String, OAuth10aService> map = INGCONSTANT.getServiceMap();
-			map.put(user, new ServiceBuilder()
-					.apiKey(keylist.get(0))
-					.apiSecret(keylist.get(1))
-					.callback("oob")
-					.build(OBPApi.instance()));
-			INGCONSTANT.setServiceMap(map);
-		}
-		return(new OAuth1AccessToken(keylist.get(2), keylist.get(3), keylist.get(4)));
+		String[] keys = INGCONSTANT.getTestuser().getKeys().get(user);
+		return(new OAuth1AccessToken(keys[0], keys[1], keys[2]));
 	}
 
 

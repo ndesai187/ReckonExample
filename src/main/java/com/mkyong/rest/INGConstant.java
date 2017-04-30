@@ -1,5 +1,6 @@
 package com.mkyong.rest;
 
+import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.oauth.OAuth10aService;
 import org.slf4j.Logger;
@@ -13,6 +14,10 @@ import java.util.Map;
  */
 public class INGConstant {
     private final Logger log = LoggerFactory.getLogger(this.getClass());
+
+    final static String DefaultUser="bennettzhou1";
+    final static String apiKey = "bf3hvn0fxgy1ikrjplhzyljjrwpyy2egomaztsga";
+    final static String apiSecret = "fbeiz303g1xdujaghu2qou5ebstmgy4c1tlaetut";
 
     //this field contains the single instance every initialized.
     private static INGConstant ingConstant;
@@ -36,8 +41,13 @@ public class INGConstant {
 
     final private static TestUser testuser = new TestUser();
     private static HashMap<String, String> BANKS;
-    private static HashMap<String, OAuth10aService> serviceMap;
+    private static OAuth10aService service;
     private static HashMap<String, OAuthRequest> requestMap;
+    private static HashMap<String, String> accountMap;
+
+    public String getDefaultUser() {
+        return DefaultUser;
+    }
 
     public TestUser getTestuser() {
         return testuser;
@@ -51,15 +61,16 @@ public class INGConstant {
         INGConstant.BANKS = BANKS;
     }
 
-    public HashMap<String, OAuth10aService> getServiceMap() {
-        if(serviceMap == null){
-            serviceMap = new HashMap<String, OAuth10aService>();
+    public OAuth10aService getService() {
+        if(service == null){
+            log.info("Initiating Service...");
+            service = new ServiceBuilder()
+                    .apiKey(apiKey)
+                    .apiSecret(apiSecret)
+                    .callback("oob")
+                    .build(OBPApi.instance());
         }
-        return serviceMap;
-    }
-
-    public void setServiceMap(HashMap<String, OAuth10aService> serviceMap) {
-        INGConstant.serviceMap = serviceMap;
+        return service;
     }
 
     public HashMap<String, OAuthRequest> getRequestMap() {
@@ -71,5 +82,16 @@ public class INGConstant {
 
     public void setRequestMap(HashMap<String, OAuthRequest> requestMap) {
         INGConstant.requestMap = requestMap;
+    }
+
+    public HashMap<String, String> getAccountMap() {
+        if(accountMap == null){
+            accountMap = new HashMap<String, String>();
+        }
+        return accountMap;
+    }
+
+    public void setAccountMap(HashMap<String, String> accountMap) {
+        INGConstant.accountMap = accountMap;
     }
 }
