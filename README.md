@@ -65,17 +65,11 @@ https://myreckoning.herokuapp.com/ReckonINGExample/getMyTransactionHistory?user_
 <br/>
 <br/>
 loanAmount(int): Loan Principal<br/>
-<br/>
 numYears(int): loan duration<br/>
-<br/>
 currentAge(int): Current age of borrower<br/>
-<br/>
 totalMonthlyDebt(double): Currently monthly debt of borrower<br/>
-<br/>
 totalMonthlyIncome(double): Currently monthly salary income of borrower<br/>
-<br/>
 Loantype: loan offered by which bank<br/>
-<br/>
 <br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=ING
 <br/>
