@@ -71,6 +71,7 @@ totalMonthlyDebt(double): Currently monthly debt of borrower<br/>
 totalMonthlyIncome(double): Currently monthly salary income of borrower<br/>
 Loantype: loan offered by which bank<br/>
 <br/>
+
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=ING
 
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=SCB
