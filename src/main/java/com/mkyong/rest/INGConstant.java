@@ -53,7 +53,7 @@ public class INGConstant {
         if(BanksShortName == null){
             BanksShortName = new HashMap<String, String>();
             BanksShortName.put("at.03.1465.es", "Netherlands Bank");
-            BanksShortName.put("at02-1465–-01”, "Netherlands Bank");
+            BanksShortName.put("at02-1465--01", "Netherlands Bank");
             BanksShortName.put("hsbc-test", "Hong Kong Bank");
             BanksShortName.put("rbs", "Scotland Bank");
             BanksShortName.put("deutche-test", "German Bank");
