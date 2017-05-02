@@ -22,8 +22,9 @@ public class JTest {
     public void TestDepositAccounts() {
 
         JSONService j = new JSONService();
+        j.getLoanDetails(100000, 10, 38, 2000, 8000, "ING");
         //j.getMyAccounts("superhero");
-        j.getMyTransactionHistory("superhero");
+        //j.getMyTransactionHistory("superhero");
         //j.getBanks();
         //System.out.println("ING Account Balance>>>>>>>>>>>>: "+j.getAccountById("superhero", "at02-1465--01", "supering").getAmount());
         //System.out.println("HSBC Account Balance>>>>>>>>>>>>: "+j.getAccountById("superhero", "hsbc-test", "superhsbc").getAmount());

@@ -6,6 +6,7 @@ import com.github.scribejava.core.model.OAuthRequest;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth10aService;
 import com.google.gson.Gson;
+import com.mkyong.rest.LoanCalculator.LoanDetails;
 import com.mkyong.rest.MyAccounts.*;
 import com.mkyong.rest.MyTransactions.MyTransactions;
 import com.mkyong.rest.MyTransactions.ResponseMyTransactions;
@@ -26,7 +27,10 @@ import com.mkyong.rest.Utils.CacheUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -37,6 +41,9 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Type;
 import com.google.gson.reflect.TypeToken;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.text.ParseException;
 import java.util.Date;
 import java.text.DateFormat;
@@ -320,6 +327,65 @@ public class JSONService {
 
 		return reply;
 
+	}
+
+	@GET
+	@Path("/loan-calculator")
+	@Produces("application/json")
+	public LoanDetails getLoanDetails(@QueryParam("loanAmount") double loanAmount, @QueryParam("numYears") int numYears,
+									  @QueryParam("currentAge") int currentAge, @QueryParam("totalMonthlyDebt") double totalMonthlyDebt,
+									  @QueryParam("totalMonthlyIncome") double totalMonthlyIncome, @QueryParam("LoanType") String LoanType) {
+		String url = "https://myloan-calculator.herokuapp.com/loan-calculator";
+		String payload = "{" +
+				"\"loanAmount\":"+loanAmount+"," +
+				"\"numYears\":"+numYears+"," +
+				"\"currentAge\":"+currentAge+"," +
+				"\"totalMonthlyDebt\":"+totalMonthlyDebt+"," +
+				"\"totalMonthlyIncome\":"+totalMonthlyIncome+"," +
+				"\"type\":\""+LoanType+"\"" +
+				"}";
+		Gson gson = new Gson();
+		LoanDetails loanDetail = gson.fromJson(postJsonRequest(payload, url), LoanDetails.class);
+		return loanDetail;
+	}
+
+	public String postJsonRequest(String jsonString, String url)
+	{
+		HttpClient httpClient = new DefaultHttpClient();
+		StringBuilder builder = new StringBuilder();
+		try {
+			HttpPost postRequest = new HttpPost(url);
+			postRequest.setHeader("Content-type", "application/json");
+			StringEntity entity = new StringEntity(jsonString);
+
+			postRequest.setEntity(entity);
+
+			long startTime = System.currentTimeMillis();
+			HttpResponse response = httpClient.execute(postRequest);
+			long elapsedTime = System.currentTimeMillis() - startTime;
+			System.out.println("Time taken : "+elapsedTime+"ms");
+
+			InputStream is = response.getEntity().getContent();
+			Reader reader = new InputStreamReader(is);
+			BufferedReader bufferedReader = new BufferedReader(reader);
+			while (true) {
+				try {
+					String line = bufferedReader.readLine();
+					if (line != null) {
+						builder.append(line);
+					} else {
+						break;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			System.out.println(builder.toString());
+			System.out.println("****************");
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+		return builder.toString();
 	}
 
 
