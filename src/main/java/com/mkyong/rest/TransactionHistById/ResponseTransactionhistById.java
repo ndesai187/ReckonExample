@@ -33,4 +33,6 @@ public class ResponseTransactionhistById {
     public void setTransactionList(ArrayList<TransactionHistBean> transactionList) {
         TransactionList = transactionList;
     }
+
+
 }

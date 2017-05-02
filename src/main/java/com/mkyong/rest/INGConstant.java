@@ -41,12 +41,26 @@ public class INGConstant {
 
     final private static TestUser testuser = new TestUser();
     private static HashMap<String, String> BANKS;
+    private static HashMap<String, String> BanksShortName;
     private static OAuth10aService service;
-    private static HashMap<String, OAuthRequest> requestMap;
     private static HashMap<String, String> accountMap;
 
     public String getDefaultUser() {
         return DefaultUser;
+    }
+
+    public HashMap<String, String> getBanksShortName() {
+        if(BanksShortName == null){
+            BanksShortName = new HashMap<String, String>();
+            BanksShortName.put("at.03.1465.es", "Netherlands Bank");
+            BanksShortName.put("hsbc-test", "Hong Kong Bank");
+            BanksShortName.put("rbs", "Scotland Bank");
+            BanksShortName.put("deutche-test", "German Bank");
+            BanksShortName.put("in-bank-y-2", "Indian Bank");
+            BanksShortName.put("at03-0019", "German Bank");
+            BanksShortName.put("at02-0049--01", "Spanish Bank");
+        }
+        return BanksShortName;
     }
 
     public TestUser getTestuser() {
@@ -71,17 +85,6 @@ public class INGConstant {
                     .build(OBPApi.instance());
         }
         return service;
-    }
-
-    public HashMap<String, OAuthRequest> getRequestMap() {
-        if(requestMap == null){
-            requestMap = new HashMap<String, OAuthRequest>();
-        }
-        return requestMap;
-    }
-
-    public void setRequestMap(HashMap<String, OAuthRequest> requestMap) {
-        INGConstant.requestMap = requestMap;
     }
 
     public HashMap<String, String> getAccountMap() {

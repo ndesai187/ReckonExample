@@ -8,6 +8,7 @@ public class ResponseMyTransactions {
     private String transaction_ids;
     private String bank_id;
     private String bank_fullname;
+    private String bank_shortname;
     private String account_id;
     private String status;
     private String start_date;
@@ -37,6 +38,14 @@ public class ResponseMyTransactions {
 
     public void setBank_fullname(String bank_fullname) {
         this.bank_fullname = bank_fullname;
+    }
+
+    public String getBank_shortname() {
+        return bank_shortname;
+    }
+
+    public void setBank_shortname(String bank_shortname) {
+        this.bank_shortname = bank_shortname;
     }
 
     public String getAccount_id() {

@@ -6,11 +6,20 @@ package com.mkyong.rest.OBPObjects;
 public class ResponseAccountById {
     private String bank_id;
     private String bank_fullname;
+    private String bank_shortname;
     private String id;
     private String number;
     private String amount;
     private String currency;
     private String displayname;
+
+    public String getBank_shortname() {
+        return bank_shortname;
+    }
+
+    public void setBank_shortname(String bank_shortname) {
+        this.bank_shortname = bank_shortname;
+    }
 
     public String getBank_id() {
         return bank_id;

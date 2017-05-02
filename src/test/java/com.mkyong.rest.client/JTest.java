@@ -22,7 +22,7 @@ public class JTest {
     public void TestDepositAccounts() {
 
         JSONService j = new JSONService();
-        j.getMyAccounts("superhero");
+        //j.getMyAccounts("superhero");
         j.getMyTransactionHistory("superhero");
         //j.getBanks();
         //System.out.println("ING Account Balance>>>>>>>>>>>>: "+j.getAccountById("superhero", "at02-1465--01", "supering").getAmount());

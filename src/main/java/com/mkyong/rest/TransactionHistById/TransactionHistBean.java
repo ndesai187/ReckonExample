@@ -1,5 +1,7 @@
 package com.mkyong.rest.TransactionHistById;
 
+import com.mkyong.rest.INGConstant;
+
 /**
  * Created by bennettzhou on 29/04/2017.
  */
@@ -19,6 +21,25 @@ public class TransactionHistBean {
     private String completedDateTime;
     private String newBalance;
     private String balanceCcy;
+
+    public TransactionHistBean(Transactions tranx){
+        TransactionId = tranx.getId();
+        MyAccount=tranx.getAccount().getId();
+        MyBank=tranx.getAccount().getBank().getName();
+        MyAccountNumber=tranx.getAccount().getNumber();
+        ToAccount=tranx.getCounterparty().getHolder().getName() + (INGConstant.getInstance().getAccountMap()
+                .get(tranx.getCounterparty().getNumber())==null?"":"(id="+INGConstant.getInstance().getAccountMap().get(tranx.getCounterparty().getNumber())+")");
+        ToBank=tranx.getCounterparty().getBank().getName();
+        ToAccountNumber=tranx.getCounterparty().getNumber();
+        Amount=tranx.getDetails().getValue().getAmount();
+        currency=tranx.getDetails().getValue().getCurrency();
+
+        completedDateTime=tranx.getDetails().getCompleted();
+        type=tranx.getDetails().getType();
+        description=tranx.getDetails().getDescription();
+        newBalance=tranx.getDetails().getNew_balance().getAmount();
+        balanceCcy=tranx.getDetails().getNew_balance().getCurrency();
+    }
 
     public String getTransactionId() {
         return TransactionId;

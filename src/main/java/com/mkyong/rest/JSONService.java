@@ -22,6 +22,7 @@ import com.mkyong.rest.TransactionHistById.ResponseTransactionhistById;
 import com.mkyong.rest.TransactionHistById.TransactionHistBean;
 import com.mkyong.rest.TransactionHistById.TransactionHistById;
 import com.mkyong.rest.TransactionHistById.Transactions;
+import com.mkyong.rest.Utils.CacheUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -84,24 +85,7 @@ public class JSONService {
 		ArrayList<TransactionHistBean> transactionList = new ArrayList<TransactionHistBean>();
 
 		for(Transactions tranx : obj.getTransactions()){
-			TransactionHistBean bean = new TransactionHistBean();
-			bean.setTransactionId(tranx.getId());
-			bean.setMyAccount(tranx.getAccount().getId());
-			bean.setMyBank(tranx.getAccount().getBank().getName());
-			bean.setMyAccountNumber(tranx.getAccount().getNumber());
-			bean.setToAccount(tranx.getCounterparty().getHolder().getName() + (INGCONSTANT.getAccountMap()
-					.get(tranx.getCounterparty().getNumber())==null?"":"(id="+INGCONSTANT.getAccountMap().get(tranx.getCounterparty().getNumber())+")"));
-			bean.setToBank(tranx.getCounterparty().getBank().getName());
-			bean.setToAccountNumber(tranx.getCounterparty().getNumber());
-			bean.setAmount(tranx.getDetails().getValue().getAmount());
-			bean.setCurrency(tranx.getDetails().getValue().getCurrency());
-
-			bean.setCompletedDateTime(tranx.getDetails().getCompleted());
-			bean.setType(tranx.getDetails().getType());
-			bean.setDescription(tranx.getDetails().getDescription());
-			bean.setNewBalance(tranx.getDetails().getNew_balance().getAmount());
-			bean.setBalanceCcy(tranx.getDetails().getNew_balance().getCurrency());
-			transactionList.add(bean);
+			transactionList.add(new TransactionHistBean(tranx));
 		}
 		reply.setNumOfTranx(String.valueOf(transactionList.size()));
 		reply.setDisplayname(user_name);
@@ -170,6 +154,7 @@ public class JSONService {
 
 		reply.setAmount(obj.getBalance().getAmount());
 		reply.setBank_fullname(INGCONSTANT.getBANKS().get(obj.getBank_id()));
+		reply.setBank_shortname(INGCONSTANT.getBanksShortName().get(obj.getBank_id()));
 		reply.setBank_id(obj.getBank_id());
 		reply.setCurrency(obj.getBalance().getCurrency());
 		reply.setDisplayname(obj.getOwners()[0].getDisplay_name());
@@ -324,6 +309,7 @@ public class JSONService {
 		reply.setAccount_id(obj.getFrom().getAccount_id());
 		reply.setBank_id(obj.getFrom().getBank_id());
 		reply.setBank_fullname(INGCONSTANT.getBANKS().get(obj.getFrom().getBank_id()));
+		reply.setBank_shortname(INGCONSTANT.getBanksShortName().get(obj.getFrom().getBank_id()));
 		reply.setStart_date(obj.getStart_date());
 		reply.setEnd_date(obj.getEnd_date());
 		reply.setStatus(obj.getStatus());
@@ -437,7 +423,12 @@ public class JSONService {
 	public String postResponse(String user, String url, String sendingEntity) {
 		
 		try {
-			OAuthRequest request = initiateTransaction(user, url, sendingEntity);
+			OAuthRequest request = CacheUtils.getRequestMap(user, url+"_"+sendingEntity);
+			if (request == null) {
+				log.info("Initiating Request for user+url="+user+"_"+url);
+				request = initiateTransaction(user, url, sendingEntity);
+				CacheUtils.putRequestMap(user, url+"_"+sendingEntity, request);
+			}
 			com.github.scribejava.core.model.Response response = INGCONSTANT.getService().execute(request);
 			final String jsonString = response.getBody();
 			final int statusCode = response.getCode();
@@ -469,14 +460,12 @@ public class JSONService {
 			user=INGCONSTANT.getDefaultUser();
 
 		try {
-			if (INGCONSTANT.getRequestMap().get(user + url) == null) {
-				log.info("Initiating Request for user+url="+user+url);
-				OAuthRequest request = initiateRequest(user, url);
-				HashMap<String, OAuthRequest> map = INGCONSTANT.getRequestMap();
-				map.put(user + url, request);
-				INGCONSTANT.setRequestMap(map);
+			OAuthRequest request = CacheUtils.getRequestMap(user, url);
+			if (request == null) {
+				log.info("Initiating Request for user+url="+user+"_"+url);
+				request = initiateRequest(user, url);
+				CacheUtils.putRequestMap(user, url, request);
 			}
-			OAuthRequest request = INGCONSTANT.getRequestMap().get(user+url);
 			com.github.scribejava.core.model.Response response=INGCONSTANT.getService().execute(request);
 			log.info("\nGet response from OBP...");
 			log.info("status code: "+response.getCode());
