@@ -71,19 +71,19 @@ totalMonthlyDebt(double): Currently monthly debt of borrower<br/>
 totalMonthlyIncome(double): Currently monthly salary income of borrower<br/>
 Loantype: loan offered by which bank<br/>
 <br/>
-https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&CurrentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=ING
+<p>https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=ING</p>
 <br/>
 <br/>
-https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=SCB
+<p>https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=SCB</p>
 <br/>
 <br/>
-https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&CurrentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=OCBC
+<p>https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=OCBC</p>
 <br/>
 <br/>
-https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&CurrentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=CITI
+<p>https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=CITI</p>
 <br/>
 <br/>
-https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&CurrentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=HSBC
+<p>https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&CurrentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=HSBC</p>
 
 
 
