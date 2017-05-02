@@ -64,8 +64,6 @@ https://myreckoning.herokuapp.com/ReckonINGExample/getMyTransactionHistory?user_
 <li>Loan Calculator for comparing the offering package based on the provided information
 <br/>
 <br/>
-Input Required:<br/>
-<br/>
 loanAmount(int): Loan Principal<br/>
 <br/>
 numYears(int): loan duration<br/>
@@ -81,11 +79,15 @@ Loantype: loan offered by which bank<br/>
 <br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=ING
 <br/>
+<br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=SCB
+<br/>
 <br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=OCBC
 <br/>
+<br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=CITI
+<br/>
 <br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=HSBC
 
