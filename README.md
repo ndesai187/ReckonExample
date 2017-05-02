@@ -20,38 +20,40 @@
 <br/>
 
 <b>HeroKu API (cloud) - Active</b>
-
+<br/>
 <li>GetBank list:</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getBanks
-
+<br/>
 <li>Get all accounts for user bennettzhou1</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=bennettzhou1
-
+<br/>
 <li>Get all accounts for user superhero</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getMyAccounts?user_name=superhero
-
+<br/>
 <li>Get balance for user bennettzhou1, bank_id = rbs(RBS Bank), Account name=BenAccount_1</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getAccountById?user_name=bennettzhou1&bank_id=rbs&account=BenAccount_1
-
+<br/>
 <li>Get balance for user superhero, bank_id = hsbc-test(HSBC Bank), Account name=superhsbc</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getAccountById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
-
+<br/>
 <li>Get balance for user superhero, bank_id = at02-1465–01(ING Bank), Account name=supering</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getAccountById?user_name=superhero&bank_id=at02-1465--01&account=supering
-
+<br/>
 
 <li>Transfer 10 dollar from ING bank account to HSBC account under user_name superhero</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/createTransaction/superhero?frombank_id=at02-1465--01&fromid=supering&amount=10&tobank_id=hsbc-test&toid=superhsbc
-
+<br/>
 
 <li>Check Transaction history for account superhsbc in HSBC bank, under user superhero</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getTransactionHistoryById?user_name=superhero&bank_id=hsbc-test&account=superhsbc
-
+<br/>
 
 <li>Check ALL Transaction history of user superhero (sorted by completion datetime in descendent)</li>
 https://myreckoning.herokuapp.com/ReckonINGExample/getMyTransactionHistory?user_name=superhero
-
+<br/>
+<br/>
 <li>Loan Calculator for comparing the offering package based on the provided information
+<br/>
 Input Required:
 loanAmount(int): Loan Principal
 numYears(int): loan duration
@@ -59,15 +61,15 @@ currentAge(int): Current age of borrower
 totalMonthlyDebt(double): Currently monthly debt of borrower
 totalMonthlyIncome(double): Currently monthly salary income of borrower
 Loantype: loan offered by which bank
-
+<br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=ING
-
+<br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=SCB
-
+<br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=OCBC
-
+<br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=CITI
-
+<br/>
 https://myreckoning.herokuapp.com/ReckonINGExample/loan-calculator?loanAmount=500000&numYears=15&currentAge=35&totalMonthlyDebt=3600&totalMonthlyIncome=8888&LoanType=HSBC
 
 
